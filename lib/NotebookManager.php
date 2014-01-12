@@ -6,8 +6,8 @@ class NotebookManager_NotebookNotFoundException extends Exception {}
 
 class NotebookManager {
 
-    public function __construct($notestore) {
-        $this->notestore = $notestore;
+    public function __construct() {
+        $this->notestore = ServiceBroker::get("NoteStore");
     }
 
     public function getNotebookByName($name) {

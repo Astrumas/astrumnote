@@ -7,7 +7,8 @@ class NotebookManagerTest extends PHPUnit_Framework_TestCase {
 
     public function setUp() {
         $this->notestore_mock = $this->getMock('StubClass', array( 'listNotebooks' ));
-        $this->notebook_manager = new NotebookManager($this->notestore_mock);
+        ServiceBroker::set("NoteStore", $this->notestore_mock);
+        $this->notebook_manager = new NotebookManager();
         $this->test_notebooks = unserialize( file_get_contents( dirname(__FILE__) . '/../fixtures/notebooks.serialized') );
     }
 

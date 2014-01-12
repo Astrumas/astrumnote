@@ -2,10 +2,11 @@
 
 class Note {
 
-    public function __construct($raw_details) {
-        $this->title = $raw_details->title;
-        $this->guid = $raw_details->guid;
-        $this->content = $raw_details->content;
+    public function __construct($raw_data) {
+        $this->raw_data = $raw_data;
+        $this->title = $raw_data->title;
+        $this->guid = $raw_data->guid;
+        $this->content = $raw_data->content;
     }
 
 }

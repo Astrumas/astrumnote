@@ -4,10 +4,11 @@ require_once 'Note.php';
 
 class Notebook {
 
-    public function __construct($raw_details) {
+    public function __construct($raw_data) {
         $this->noteManager = ServiceBroker::get("NoteManager");
-        $this->name = $raw_details->name;
-        $this->guid = $raw_details->guid;
+        $this->raw_data = $raw_data;
+        $this->name = $raw_data->name;
+        $this->guid = $raw_data->guid;
     }
 
     public function getNotes() {

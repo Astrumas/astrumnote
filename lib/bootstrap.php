@@ -13,3 +13,9 @@ $client = new Evernote\Client( array( "token" => $config->token ) );
 ServiceBroker::set("EvernoteClient", $client);
 ServiceBroker::set("NoteStore", $client->getNotestore());
 
+use EDAM\NoteStore\NoteFilter;
+ServiceBroker::set("NoteFilter", new NoteFilter());
+
+use EDAM\NoteStore\NotesMetadataResultSpec;
+ServiceBroker::set("NotesMetadataResultSpec", new NotesMetadataResultSpec());
+

@@ -8,6 +8,7 @@ require_once 'packages/NoteStore/NoteStore_types.php';
 require_once 'ServiceBroker.php';
 
 $config = json_decode( file_get_contents( dirname(__FILE__) . '/../config.json' ) );
+ServiceBroker::set("Config", $config);
 
 $client = new Evernote\Client( array( "token" => $config->token ) );
 ServiceBroker::set("EvernoteClient", $client);

@@ -1,0 +1,96 @@
+#!/usr/bin/env php
+<?php
+     
+require_once 'lib/bootstrap.php';
+
+class AstrumNote {
+
+    public function __construct() {
+        $this->note_store = ServiceBroker::get("NoteStore");
+        $this->notebook_manager = ServiceBroker::get("NotebookManager");
+        $this->last_update_count = $this->getLastState();
+        $this->config = ServiceBroker::get("Config");
+    }
+
+    public function run() {
+        // TODO get from config file. Need ConfigBroker?
+        $watched_notebook_name = "Test Notebook";
+        $notebook = $this->notebook_manager->getNotebookByName($watched_notebook_name);
+
+        // while( true ) {
+            // $this->poll_for_changes();
+            $this->parse_notes(array( new Note((object)array( "raw_data" => null, "title" => "!New Note @today \$ACTION_PENDING #tag1", "guid" => 1231232, "content" => "blah"))));
+        // }
+    }
+
+    private function poll_for_changes() {
+        do {
+            $update = $this->getLastState();
+            echo "Polling...\n";
+            sleep(5);
+        } while( $this->last_update_count === $update );
+        
+        echo "Changes detected...\n";
+        $this->last_update_count = $update;
+    }
+
+    private function getLastState() {
+        $last_sync = $this->note_store->getSyncState();
+        return $last_sync->updateCount;
+    }
+
+    private function parse_notes($notes) {
+        foreach( $notes as $note ) {
+            if( strpos($note->title, $this->config->trigger) === 0 ) {
+                $note->title = str_replace($this->config->trigger, "", $note->title);
+                $actions = $this->parseActions($note, $this->config->actions);
+                foreach( $actions as $action ) {
+                    if( method_exists($this, $action) ) {
+                        $this->$action($note);
+                    }
+                }
+            } 
+        }
+    }
+    
+    private function parseActions(&$note, $keychars) {
+        $text_words = explode(" ",$note->title);
+        $text_words = array_map( 
+            function($word) {
+                return trim($word);
+            }, 
+            $text_words
+        );
+
+        $actions = array();
+        foreach ($text_words as $key => $term) {
+            if( in_array($term[0], array_keys((array)$keychars)) ) {
+                unset($text_words[$key]);
+                // echo "Going to perform action {$keychars->$term[0]}!!!";
+                $actions[] = $keychars->$term[0];
+            }
+        }
+
+        if( !empty($actions) ) {
+           $note->title = implode(" ", $text_words);
+        }
+
+        return $actions;
+    }
+
+    private function setReminder($note) {
+        echo "Setting reminder for '{$note->title}'\n";
+    }
+
+    private function setTag($note) {
+        echo "Setting tag for '{$note->title}'\n";
+    }
+
+    private function setNotebook($note) {
+        echo "Setting notebook for '{$note->title}'\n";
+    }
+
+}
+
+$script = new AstrumNote();
+$script->run();

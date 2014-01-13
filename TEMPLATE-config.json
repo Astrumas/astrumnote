@@ -1,3 +1,9 @@
 {
     "token" : "<development_token>",
+    "trigger" : "!",
+    "actions" : {
+        "@" : "setReminder",
+        "#" : "setTag",
+        "$" : "setNotebook"
+    }
 }
